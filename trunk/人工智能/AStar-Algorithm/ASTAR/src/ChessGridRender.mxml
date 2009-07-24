@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Box xmlns:mx="http://www.adobe.com/2006/mxml"
+	 creationComplete="init()" borderColor="#092BA9" borderStyle="solid">
+<mx:Script>
+	<![CDATA[
+	import gs.*;
+	
+	private var s:State;
+	public var editable:Boolean = false;
+	
+	private function init():void{
+		R1.removeAllChildren();
+		R2.removeAllChildren();
+		R3.removeAllChildren();
+		for( var i:int=0;i<3;i++){
+			var ciR1:ChessItem = new ChessItem();
+			ciR1.pos = new Point(0,i);
+			ciR1.addEventListener(MouseEvent.CLICK, onUpdateState);
+			R1.addChildAt( ciR1,i );
+			var ciR2:ChessItem = new ChessItem();
+			ciR2.pos = new Point(1,i);
+			ciR2.addEventListener(MouseEvent.CLICK, onUpdateState);
+			R2.addChildAt( ciR2,i );
+			var ciR3:ChessItem = new ChessItem();
+			ciR3.pos = new Point(2,i);
+			ciR3.addEventListener(MouseEvent.CLICK, onUpdateState);
+			R3.addChildAt( ciR3,i );
+		}
+		
+		Render();			
+	}
+	private function onUpdateState( event:MouseEvent ):void{
+		if ( !editable) return;
+		var cpos:Point = (event.currentTarget as ChessItem).pos;
+		var deltax:int = Math.abs( cpos.x - data.posX ) as int;
+		var deltay:int = Math.abs( cpos.y - data.posY ) as int;
+		if ( deltax > 1 || deltay > 1 ) return;
+		if ( deltax ==1 && deltay ==1 ) return;
+		
+		(this.data as State).go(cpos);
+		this.Render();
+		
+		
+	}
+	
+	
+	public function Render( ):void{	
+		if ( data == null ) data = new State(0);
+		var l:ChessItem;
+		for( var i:int=0;i<3;i++){
+			l = R1.getChildAt(i) as ChessItem;
+			
+			l.text = data.state_data[0][i];
+			l = R2.getChildAt(i) as ChessItem;
+			l.text = data.state_data[1][i];
+			l = R3.getChildAt(i) as ChessItem;
+			l.text = data.state_data[2][i];
+		}
+		graphics.clear();
+		if ( data.label == "start" ) graphics.lineStyle( 5, 0xff00ff);
+		else if ( data.label == "end" ) graphics.lineStyle( 5, 0xff0044);
+		else graphics.lineStyle( 3, 0x0000ff);
+		
+		graphics.drawCircle( width,0,8);
+	}
+	
+
+	
+		
+	]]>
+</mx:Script>
+<mx:VBox>
+	<mx:HBox id="R1">
+		<mx:Label text="1"/>
+		<mx:Label text="1"/>
+		<mx:Label text="1"/>
+	</mx:HBox>
+	<mx:HBox id="R2"> 
+		<mx:Label text="1"/>
+		<mx:Label text="1"/>
+		<mx:Label text="1"/>
+	</mx:HBox>
+	<mx:HBox id="R3">
+		<mx:Label text="1"/>
+		<mx:Label text="1"/>
+		<mx:Label text="1"/>
+	</mx:HBox>
+</mx:VBox>
+        
+
+</mx:Box>

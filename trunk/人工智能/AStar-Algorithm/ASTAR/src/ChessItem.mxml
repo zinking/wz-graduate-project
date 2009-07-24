@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Label xmlns:mx="http://www.adobe.com/2006/mxml"
+	 textAlign="center" text="1" fontWeight="bold" color="#3BB7D2">
+	 
+	 <mx:Script>
+	 	<![CDATA[
+	 		
+	 		public var pos:Point;
+	 	]]>
+	 </mx:Script>
+	
+</mx:Label>
