@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:fc="http://www.adobe.com/2006/fc"  
+	layout="absolute" creationComplete="init()" xmlns:Render="*">
+	
+	<mx:Script>
+		<![CDATA[
+		import gs.*;
+        import com.adobe.flex.extras.controls.springgraph.Graph;
+        private var g: Graph = new Graph();
+		
+		
+		private var gridsolver:GridSolver = new GridSolver();
+		
+		public function init():void{
+			cgrsrc.data = gridsolver.srcState;
+			cgrdst.data = gridsolver.dstState;
+			cgrsrc.editable = true;
+			cgrdst.editable = true;
+			cgrsrc.Render();
+			cgrdst.Render();
+			
+			
+			gridsolver.execute();
+			RenderSearchStack();
+			
+		}
+		
+		private function runSolver(event:Event):void{
+			gridsolver.Solve(cgrsrc.data as State, cgrdst.data as State);
+			RenderSearchStack();
+		}
+		
+		private function changeSelect(event:Event):void{
+			gridsolver.setCompareCriteria( cbAlgo.selectedIndex );
+		}
+		
+		private function RenderSearchStack():void{
+			g.empty();
+			for each( var item:State in gridsolver.search_stack ){
+				g.add( item );
+				if ( item.parent != null ) g.link( item, item.parent);
+			}
+			graphrender.dataProvider = g;
+			lblSearchDepth.text = "Searched Depth:"+gridsolver.searchdepth;
+			lblSearchNodes.text = "Searched Nodes:"+gridsolver.searchedNodes;
+		}
+		
+		private function RenderSovlerResult():void{
+			g.empty();
+			var rs:State = gridsolver.smallest();
+			var prev_state:State;
+			do{
+				g.add( rs );
+				if( prev_state  != null )  g.link(rs, prev_state);
+				prev_state = rs;
+				rs = rs.parent;				
+			}while ( rs != null )
+			graphrender.dataProvider = g;
+
+		}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:DividedBox width="100%" height="100%">
+		<mx:Canvas width="100%" height="20%" backgroundColor="#0077ff">
+			<mx:HSlider  labels="Scale" id="hsRep" x="54.5" y="45" minimum="0.05" maximum="2"  value="0.25"/>
+			<Render:ChessGridRender id="cgrsrc" x="295" y="25"/>
+			<Render:ChessGridRender id="cgrdst" x="465" y="25"/>
+			<mx:Button label="RUN" click="runSolver(event)" x="654" y="55"/>
+			<mx:Label text="&gt;&gt;&gt;"  x="392" y="45"/>
+			<mx:ComboBox id="cbAlgo" change="changeSelect(event)" x="605" y="25" selectedIndex="0">
+				<mx:ArrayCollection>
+			         <mx:String>AStar</mx:String>
+			         <mx:String>MountainClimbing</mx:String>
+			     </mx:ArrayCollection>
+			</mx:ComboBox>
+			<mx:Label id="lblSearchDepth" x="813" y="27" width="200" color="#0AC1C8" />
+			<mx:Label id="lblSearchNodes" x="813" y="57" width="200" color="#0AC1C8" />
+				
+			
+		</mx:Canvas>
+		<fc:SpringGraph id="graphrender" backgroundColor="#007777"  borderStyle="solid"
+	        lineColor="#6600ff" repulsionFactor="{hsRep.value}"  width="100%" height="80%"
+	        itemRenderer="ChessGridRender" >
+	    </fc:SpringGraph>		
+	</mx:DividedBox>
+	
+	
+
+	
+</mx:Application>
